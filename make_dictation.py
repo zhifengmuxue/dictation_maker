@@ -12,6 +12,7 @@
  - 遍历段落和表格单元格。可扩展到页眉/页脚或其他 color 表示方式。
 """
 import sys
+import os
 from docx import Document
 from docx.shared import RGBColor
 
@@ -84,10 +85,14 @@ def make_dictation(in_path, out_path=None):
     process_block(doc)
     # TODO: 可扩展处理 headers/footers
     if out_path is None:
+        base_dir = os.path.dirname(os.path.abspath(in_path)) or '.'
+        result_dir = os.path.join(base_dir, 'result')
+        os.makedirs(result_dir, exist_ok=True)
         if in_path.lower().endswith('.docx'):
-            out_path = in_path[:-5] + '_dictation.docx'
+            filename = os.path.basename(in_path)[:-5] + '_dictation.docx'
         else:
-            out_path = in_path + '_dictation.docx'
+            filename = os.path.basename(in_path) + '_dictation.docx'
+        out_path = os.path.join(result_dir, filename)
     doc.save(out_path)
     return out_path
 
