@@ -38,8 +38,24 @@ def replace_non_black_in_run(run):
         length = len(text)
         # 每个字符对应两个非断行空格，使下划线更长
         under_text = '\u00A0' * (length * 2)
+
+        # 先尝试清除 theme_color（如果存在），并预先设置为黑色与下划线，
+        # 然后再替换文本，最后再次确保属性已应用。
+        try:
+            if run.font.color is not None and hasattr(run.font.color, 'theme_color'):
+                run.font.color.theme_color = None
+        except Exception:
+            # 如果无法清除 theme_color，继续但不终止
+            pass
+
+        # 先设置样式
+        run.font.color.rgb = RGBColor(0x00, 0x00, 0x00)
+        run.font.underline = True
+
+        # 替换文本
         run.text = under_text
-        # 设置下划线并确保是黑色
+
+        # 再次确保样式已应用（有时赋值文本会导致样式丢失）
         run.font.underline = True
         run.font.color.rgb = RGBColor(0x00, 0x00, 0x00)
 
